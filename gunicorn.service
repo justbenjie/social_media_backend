@@ -1,0 +1,14 @@
+[Unit]
+Description=demo fastapi application
+After=network.target
+
+[Service]
+User=social_media_admin
+Group=social_media_admin
+WorkingDirectory=/home/social_media_admin/app/src/
+Environment="PATH=/home/social_media_admin/app/venv/bin"
+EnvironmentFile=/home/social_media_admin/.env
+ExecStart=/home/social_media_admin/app/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000
+
+[Install]
+WantedBy=multi-user.target
