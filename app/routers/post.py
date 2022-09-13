@@ -12,20 +12,20 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[schemas.PostOut])
-async def get_posts(db: Session = Depends(get_db), limit: int = 5, skip: int = 0, search: str | None = ""):
+def get_posts(db: Session = Depends(get_db), limit: int = 5, skip: int = 0, search: str | None = ""):
 
     posts_info = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).filter(
         models.Post.title.contains(search)).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(
         models.Post.id)
 
     results = posts_info.limit(limit).offset(skip).all()
-
+    
     return results
 
 
 @router.get("/my_posts", response_model=List[schemas.PostOut])
-async def get_current_user_posts(db: Session = Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user), limit: int = 5, skip: int = 0, search: str | None = ""):
-
+def get_current_user_posts(db: Session = Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user), limit: int = 5, skip: int = 0, search: str | None = ""):
+    
     posts = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).filter(
         models.Post.user_id == current_user.id, models.Post.title.contains(search)).join(
         models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id)
@@ -36,7 +36,7 @@ async def get_current_user_posts(db: Session = Depends(get_db), current_user: mo
 
 
 @router.get("/{id}", response_model=schemas.PostOut)
-async def get_post(id: int, db: Session = Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user)):
+def get_post(id: int, db: Session = Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user)):
 
     post = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).filter(models.Post.id == id).join(
         models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(
