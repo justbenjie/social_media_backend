@@ -3,7 +3,7 @@ name: Build and Deploy
 on: [push, pull_request]
 
 jobs:
-  job1:
+  build:
     environment:
       name: testing
     env:
@@ -15,6 +15,7 @@ jobs:
       SECRET_KEY: ${{secrets.SECRET_KEY}}
       ALGORITHM: ${{secrets.ALGORITHM}}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
+
     services:
       postgres:
         image: postgres
@@ -28,7 +29,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
     runs-on: ubuntu-latest
+
     steps:
       - name: pulling git repo
         uses: actions/checkout@v2
@@ -62,3 +65,19 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/social_media_backend:latest
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/social_media_backend:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/social_media_backend:buildcache,mode=max
+
+  deploy:
+    environment:
+      name: testing
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+      - name: pulling git repo
+        uses: actions/checkout@v2
+      - name: deploying to Heruko
+        uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "social-media-philipp"
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
