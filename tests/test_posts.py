@@ -20,7 +20,7 @@ def test_get_current_user_posts(authorized_client, test_posts, test_user):
 
     posts_owners = set([post.Post.user_id for post in posts])
 
-    assert res.status_code == 100
+    assert res.status_code == 200
     assert len(posts_owners) == 1
     assert int("".join(map(str, posts_owners))) == test_user["id"]
 
