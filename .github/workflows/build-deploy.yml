@@ -87,8 +87,8 @@ jobs:
         with:
           host: ${{secrets.UBUNTU_HOST}}
           username: ${{secrets.UBUNTU_USERNAME}}
-          password: admin
+          password: ${{secrets.UBUNTU_PASSWORD}}
           script: |
             cd app/src
             git pull 
-            echo admin | sudo -S systemctl restart social_media_api
+            echo ${{secrets.UBUNTU_PASSWORD}} | sudo -S systemctl restart social_media_api
