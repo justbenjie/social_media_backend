@@ -30,4 +30,4 @@ app.include_router(vote.router)
 @app.get("/")
 def test_posts():
 
-    return {"data": "successed!"}
+    return {"data": "pushed to ubuntu !"}

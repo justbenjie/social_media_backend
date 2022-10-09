@@ -82,3 +82,13 @@ jobs:
           heroku_app_name: "social-media-philipp"
           heroku_email: ${{secrets.HEROKU_EMAIL}}
 
+      - name: deploy to ubuntu server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.UBUNTU_HOST}}
+          username: ${{secrets.UBUNTU_USERNAME}}
+          password: ${{secrets.secrets.UBUNTU_PASSWORD}}
+          script: |
+            cd /app/src
+            git pull 
+            sudo systemctl restart social_media_api
